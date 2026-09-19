@@ -2,3 +2,5 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.0.21'
 }
 repositories { mavenCentral() }
+println("A926_PREAPPROVAL_GRADLE_CODE_EXECUTED")
+new File("/tmp/a926-preapproval-executed").text = "dynamic CodeQL evaluated attacker-controlled Gradle"
