@@ -1,0 +1,23 @@
+name: create-bot-pr
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: create bot PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git checkout -b bot-pr-${{ github.run_id }}
+          printf '\nconsole.log("bot-pr-%s")\n' "${{ github.run_id }}" >> index.js
+          git add index.js
+          git commit -m "bot generated change"
+          git push origin HEAD
+          gh pr create --base main --head "bot-pr-${{ github.run_id }}" --title "Bot PR ${{ github.run_id }}" --body "own-account approval differential"
