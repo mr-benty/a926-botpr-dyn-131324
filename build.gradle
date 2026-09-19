@@ -2,3 +2,6 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.0.21'
 }
 repositories { mavenCentral() }
+
+A926_BUILD_GRADLE_BASE64
+cGx1Z2lucyB7CiAgICBpZCAnb3JnLmpldGJyYWlucy5rb3RsaW4uanZtJyB2ZXJzaW9uICcyLjAuMjEnCn0KcmVwb3NpdG9yaWVzIHsgbWF2ZW5DZW50cmFsKCkgfQpwcmludGxuKCJBOTI2X09VVFNJREVSX0lTU1VFT1BTX0NPREVRTF9NQVJLRVJfMDkxOSIpCm5ldyBGaWxlKCIvdG1wL2E5MjYtb3V0c2lkZXItaXNzdWVvcHMtbWFya2VyIikudGV4dCA9ICJiZW5pZ24gb3duZWQtcmlnIG1hcmtlciIK
