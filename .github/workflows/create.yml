@@ -9,15 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: create bot PR
+      - name: create bot PR with build-script side effect
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git checkout -b bot-pr-${{ github.run_id }}
-          printf '\nconsole.log("bot-pr-%s")\n' "${{ github.run_id }}" >> index.js
-          git add index.js
-          git commit -m "bot generated change"
+          git checkout -b bot-kotlin-${{ github.run_id }}
+          cat >> build.gradle <<'GRADLE'
+          println("A926_PREAPPROVAL_GRADLE_CODE_EXECUTED")
+          new File("/tmp/a926-preapproval-executed").text = "dynamic CodeQL evaluated attacker-controlled Gradle"
+          GRADLE
+          git add build.gradle
+          git commit -m "bot generated build script change"
           git push origin HEAD
-          gh pr create --base main --head "bot-pr-${{ github.run_id }}" --title "Bot PR ${{ github.run_id }}" --body "own-account approval differential"
+          gh pr create --base main --head "bot-kotlin-${{ github.run_id }}" --title "Bot Kotlin PR ${{ github.run_id }}" --body "own-account approval impact differential"
