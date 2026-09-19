@@ -1,0 +1,9 @@
+name: ordinary-pr-control
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  control:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ordinary-control-fired
