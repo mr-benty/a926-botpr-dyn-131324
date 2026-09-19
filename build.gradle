@@ -2,3 +2,5 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.0.21'
 }
 repositories { mavenCentral() }
+
+println("A926_OUTSIDER_ISSUE_GRADLE_EXECUTED")
