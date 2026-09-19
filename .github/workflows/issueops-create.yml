@@ -1,0 +1,42 @@
+name: issueops-create-bot-pr
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+jobs:
+  create:
+    if: startsWith(github.event.issue.title, 'A926-ISSUEOPS-PROBE-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Materialize issue payload as bot PR without executing it
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch="issueops-a926-${ISSUE_NUMBER}"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git checkout -b "$branch"
+          python3 - <<'PY'
+          import base64, os, pathlib
+          body = os.environ["ISSUE_BODY"]
+          prefix = "A926_BUILD_GRADLE_BASE64\n"
+          if not body.startswith(prefix):
+              raise SystemExit("unexpected issue payload prefix")
+          raw = base64.b64decode(body[len(prefix):].strip(), validate=True)
+          if len(raw) > 4096 or b"A926_OUTSIDER_ISSUEOPS_CODEQL_MARKER" not in raw:
+              raise SystemExit("payload outside bounded probe")
+          pathlib.Path("build.gradle").write_bytes(raw)
+          PY
+          git add build.gradle
+          git commit -m "issueops bot PR from outsider issue ${ISSUE_NUMBER}"
+          git push origin "HEAD:${branch}"
+          gh pr create --base main --head "$branch" \
+            --title "IssueOps bot PR from outsider issue ${ISSUE_NUMBER}" \
+            --body "Bounded own-account probe; source issue #${ISSUE_NUMBER}."
