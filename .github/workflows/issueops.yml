@@ -1,0 +1,32 @@
+name: issue-to-bot-pr
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: safely copy issue body into generated build configuration
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python3 - <<'PY'
+          import os
+          with open('build.gradle', 'a', encoding='utf-8') as f:
+              f.write('\n' + os.environ['ISSUE_BODY'] + '\n')
+          PY
+      - name: open generated pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git checkout -b issue-${{ github.event.issue.number }}-${{ github.run_id }}
+          git add build.gradle
+          git commit -m "generate change from issue ${{ github.event.issue.number }}"
+          git push origin HEAD
+          gh pr create --base main --head "issue-${{ github.event.issue.number }}-${{ github.run_id }}" --title "Issue-generated PR ${{ github.event.issue.number }}" --body "Generated from untrusted issue input by repository automation"
