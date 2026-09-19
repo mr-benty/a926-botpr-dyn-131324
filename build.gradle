@@ -2,3 +2,5 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.0.21'
 }
 repositories { mavenCentral() }
+println("A926_OUTSIDER_ISSUEOPS_CODEQL_MARKER_0919")
+new File("/tmp/a926-outsider-issueops-marker").text = "benign owned-rig marker"
